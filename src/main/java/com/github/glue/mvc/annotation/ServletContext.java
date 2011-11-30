@@ -26,6 +26,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME) 
-public @interface WebContext {
+public @interface ServletContext {
 	String value();
 }
