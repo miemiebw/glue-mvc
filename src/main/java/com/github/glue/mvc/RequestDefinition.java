@@ -21,11 +21,11 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.github.glue.mvc.annotation.Cookie;
 import com.github.glue.mvc.annotation.Delete;
 import com.github.glue.mvc.annotation.Form;
 import com.github.glue.mvc.annotation.Get;
@@ -124,15 +124,13 @@ public class RequestDefinition{
 			return new ResponseMapper(type, anns);
 		}else if(type.equals(HttpSession.class)){
 			return new SessionMapper(type, anns);
-		}else if(type.equals(Cookie[].class)){
-//			return new CookiesMapper(type, anns);
 		}else if(hasAnn(Form.class, anns)){
 //			return new FormMapper(type, anns);
 		}else if(hasAnn(Param.class, anns)){
 //			return new ParamMapper(type, anns);
 		}else if(hasAnn(Header.class, anns)){
 
-		}else if(hasAnn(com.github.glue.mvc.annotation.Cookie.class, anns)){
+		}else if(hasAnn(Cookie.class, anns)){
 
 		}else if(hasAnn(Session.class, anns)){
 			
