@@ -30,11 +30,13 @@ import com.github.glue.mvc.annotation.Delete;
 import com.github.glue.mvc.annotation.Form;
 import com.github.glue.mvc.annotation.Get;
 import com.github.glue.mvc.annotation.Head;
+import com.github.glue.mvc.annotation.Header;
 import com.github.glue.mvc.annotation.Options;
 import com.github.glue.mvc.annotation.Param;
 import com.github.glue.mvc.annotation.Path;
 import com.github.glue.mvc.annotation.Post;
 import com.github.glue.mvc.annotation.Put;
+import com.github.glue.mvc.annotation.ServletContext;
 import com.github.glue.mvc.annotation.Session;
 import com.github.glue.mvc.annotation.Trace;
 import com.github.glue.mvc.mapper.ObjectMapper;
@@ -128,6 +130,14 @@ public class RequestDefinition{
 //			return new FormMapper(type, anns);
 		}else if(hasAnn(Param.class, anns)){
 //			return new ParamMapper(type, anns);
+		}else if(hasAnn(Header.class, anns)){
+
+		}else if(hasAnn(com.github.glue.mvc.annotation.Cookie.class, anns)){
+
+		}else if(hasAnn(Session.class, anns)){
+			
+		}else if(hasAnn(ServletContext.class, anns)){
+
 		}
 		return new ObjectMapper(type, anns);
 	}
