@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.glue.mvc.annotation;
+package com.github.glue.mvc;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Set;
 
 /**
  * @author Eric.Lee
- *
+ * 
  */
-@Target({ElementType.PARAMETER, ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)  
-public @interface Form {
-	String value() default "";
+public interface IocContainer {
+	
+	<T> T getInstance(Class<T> type);
+
+	public <T> T getInstance(Class<T> type, String name);
+
+	void inject(Object o);
+
+	Set<String> getInstanceNames(Class<?> type);
 }

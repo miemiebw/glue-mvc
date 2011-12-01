@@ -15,13 +15,16 @@
  */
 package com.github.glue.mvc;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Injector;
+import com.github.glue.mvc.mapper.VarMapper;
 
 /**
  * @author Eric.Lee
@@ -32,16 +35,15 @@ public class RequestHandler {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private RequestDefinition definition;
-	private Injector injector;
+	private IocContainer iocContainer;
 	
 	public RequestHandler(HttpServletRequest request,
-			HttpServletResponse response, RequestDefinition definition,Injector injector) {
+			HttpServletResponse response, RequestDefinition definition,IocContainer iocContainer) {
 		super();
 		this.request = request;
 		this.response = response;
 		this.definition = definition;
-		this.injector = injector;
-	//	init();
+		this.iocContainer = iocContainer;
 	}
 
 	public HttpServletRequest getRequest() {
@@ -52,5 +54,35 @@ public class RequestHandler {
 		return response;
 	}
 	
+	
+	public void handle() throws Exception{
+		Class actionClass = definition.getTarget().getDeclaringClass();
+		Object action = iocContainer.getInstance(actionClass);
+		
+		VarMapper[] paramMappers = definition.getParamMappers();
+		Object[] parameters = new Object[paramMappers.length];
+		for (int i = 0; i < paramMappers.length; i++) {
+			parameters[i] = paramMappers[i].getVar(this);
+		}
+		
+		Map<Field, VarMapper> fieldMappers = definition.getFieldMappers();
+		for (Map.Entry<Field, VarMapper> entry : fieldMappers.entrySet()) {
+			Field field = entry.getKey();
+			VarMapper varMapper = entry.getValue();
+			Object value = varMapper.getVar(this);
+			field.set(action, value);
+		}
+		
+		
+		Object executeResult = definition.getTarget().invoke(action, parameters);
+		
+		//renderView
+		if(executeResult instanceof Reply){
+			Reply reply = (Reply)executeResult;
+			reply.populate(iocContainer, request, response);
+		}else{
+			log.warn("Return Object should be Reply instance.");
+		}
+	}
 	
 }
