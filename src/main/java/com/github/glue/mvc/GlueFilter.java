@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GlueFilter implements Filter{
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private IocContainer iocContainer;
+	private Container container;
 	private List<RequestDefinition> requestDefinitions;
 	
 	/* (non-Javadoc)
@@ -45,8 +45,8 @@ public class GlueFilter implements Filter{
 	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		iocContainer = (IocContainer) filterConfig.getServletContext().getAttribute(IocContainer.class.getName());
-		RequestDefinitionScanner scanner = iocContainer.getInstance(RequestDefinitionScanner.class);
+		container = (Container) filterConfig.getServletContext().getAttribute(Container.class.getName());
+		RequestDefinitionScanner scanner = container.getInstance(RequestDefinitionScanner.class);
 		requestDefinitions = scanner.scan();
 	}
 
@@ -77,7 +77,7 @@ public class GlueFilter implements Filter{
 			}
 			//
 			log.debug("Request selected: {}",selectedDeinition);
-			RequestHandler handler = new RequestHandler(request, response, selectedDeinition, iocContainer);
+			RequestHandler handler = new RequestHandler(request, response, selectedDeinition, container);
 			handler.handle();
 			
 		}catch(Exception e){

@@ -15,35 +15,46 @@
  */
 package com.github.glue.mvc.guice;
 
-import java.util.Set;
+import javax.inject.Singleton;
 
-import com.github.glue.mvc.Container;
+import com.github.glue.mvc.ViewConfig;
+import com.github.glue.mvc.view.View;
+import com.github.glue.mvc.view.ViewResolver;
+import com.google.common.base.Preconditions;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 
 /**
  * @author Eric.Lee
  *
  */
-public class GuiceContainer implements Container {
+@Singleton
+public class GuiceViewConfig implements ViewConfig{
+	
 	private Injector injector;
 	
-	public GuiceContainer(Injector injector) {
+	@Inject
+	public GuiceViewConfig(Injector injector) {
 		super();
 		this.injector = injector;
 	}
 
 	/* (non-Javadoc)
-	 * @see com.github.glue.mvc.IocContainer#getInstance(java.lang.Class)
+	 * @see com.github.glue.mvc.ViewConfig#getView()
 	 */
 	@Override
-	public <T> T getInstance(Class<T> type) {
-		return injector.getInstance(type);
+	public ViewResolver getViewResolver() {
+		return injector.getInstance(ViewResolver.class);
 	}
 
-	public Injector getInjector() {
-		return injector;
+	/* (non-Javadoc)
+	 * @see com.github.glue.mvc.ViewConfig#getView(java.lang.String)
+	 */
+	@Override
+	public ViewResolver getViewResolver(String viewName) {
+		return injector.getInstance(Key.get(ViewResolver.class, Names.named(viewName)));
 	}
-	
-	
 
 }

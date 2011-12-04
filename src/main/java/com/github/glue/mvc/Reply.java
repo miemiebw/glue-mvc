@@ -71,7 +71,7 @@ public abstract class Reply {
 
 
 	
-	abstract void populate(IocContainer iocContainer, HttpServletRequest request, HttpServletResponse response) throws IOException;
+	abstract void populate(Container container, HttpServletRequest request, HttpServletResponse response) throws IOException;
 
 	public static DefaultReply as(){
 		return new DefaultReply();

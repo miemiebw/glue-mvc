@@ -39,7 +39,7 @@ public class JsonReply extends Reply {
 	 * @see com.github.glue.mvc.reply.Reply#populate(com.google.inject.Injector, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	void populate(IocContainer iocContainer, HttpServletRequest request,
+	void populate(Container container, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		if(!Strings.isNullOrEmpty(contentType)){
 			response.setContentType(contentType);

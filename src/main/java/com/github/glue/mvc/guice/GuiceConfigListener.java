@@ -22,7 +22,7 @@ import org.apache.commons.fileupload.servlet.FileCleanerCleanup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.glue.mvc.IocContainer;
+import com.github.glue.mvc.Container;
 import com.google.inject.Injector;
 
 /**
@@ -31,7 +31,7 @@ import com.google.inject.Injector;
  */
 public abstract class GuiceConfigListener extends FileCleanerCleanup  {
 	private static final Logger log = LoggerFactory.getLogger( GuiceConfigListener.class );
-	static final String IOCCONTAINER = IocContainer.class.getName();
+	static final String IOCCONTAINER = Container.class.getName();
 	/* (non-Javadoc)
 	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
 	 */

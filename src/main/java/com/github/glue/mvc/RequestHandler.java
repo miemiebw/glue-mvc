@@ -35,15 +35,15 @@ public class RequestHandler {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private RequestDefinition definition;
-	private IocContainer iocContainer;
+	private Container container;
 	
 	public RequestHandler(HttpServletRequest request,
-			HttpServletResponse response, RequestDefinition definition,IocContainer iocContainer) {
+			HttpServletResponse response, RequestDefinition definition,Container container) {
 		super();
 		this.request = request;
 		this.response = response;
 		this.definition = definition;
-		this.iocContainer = iocContainer;
+		this.container = container;
 	}
 
 	public HttpServletRequest getRequest() {
@@ -57,7 +57,7 @@ public class RequestHandler {
 	
 	public void handle() throws Exception{
 		Class actionClass = definition.getTarget().getDeclaringClass();
-		Object action = iocContainer.getInstance(actionClass);
+		Object action = container.getInstance(actionClass);
 		
 		VarMapper[] paramMappers = definition.getParamMappers();
 		Object[] parameters = new Object[paramMappers.length];
@@ -79,7 +79,7 @@ public class RequestHandler {
 		//renderView
 		if(executeResult instanceof Reply){
 			Reply reply = (Reply)executeResult;
-			reply.populate(iocContainer, request, response);
+			reply.populate(container, request, response);
 		}else{
 			log.warn("Return Object should be Reply instance.");
 		}

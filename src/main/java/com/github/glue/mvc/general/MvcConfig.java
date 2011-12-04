@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.glue.mvc;
+package com.github.glue.mvc.general;
 
-import java.util.Set;
+import com.github.glue.mvc.view.ViewResolver;
 
 /**
  * @author Eric.Lee
- * 
+ *
  */
-public interface IocContainer {
+public abstract class MvcConfig {
 	
-	<T> T getInstance(Class<T> type);
+	public abstract String[] getActionPackages();
 
-	public <T> T getInstance(Class<T> type, String name);
-
-	void inject(Object o);
-
-	Set<String> getInstanceNames(Class<?> type);
+	public abstract ViewResolver[] getViewResolvers();
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.glue.mvc;
+package com.github.glue.mvc.general;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -21,6 +21,11 @@ import javax.servlet.ServletContextEvent;
 import org.apache.commons.fileupload.servlet.FileCleanerCleanup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.glue.mvc.Container;
+import com.github.glue.mvc.RequestDefinitionScanner;
+import com.github.glue.mvc.ViewConfig;
+import com.github.glue.mvc.view.ViewResolver;
 
 
 
@@ -31,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DefaultConfigListener extends FileCleanerCleanup  {
 	private static final Logger log = LoggerFactory.getLogger( DefaultConfigListener.class );
-	static final String IOCCONTAINER = IocContainer.class.getName();
+	static final String CONTAINER = Container.class.getName();
 	private DefaultContainer container;
 	
 	@Override
@@ -39,20 +44,28 @@ public abstract class DefaultConfigListener extends FileCleanerCleanup  {
 		super.contextInitialized(servletContextEvent);
 		final ServletContext servletContext = servletContextEvent.getServletContext();
 		container = new DefaultContainer();
-		initContainer(container);
-		servletContext.setAttribute(IOCCONTAINER, container);
+		MvcConfig mvcConfig = createViewConfig();
+		RequestDefinitionScanner scanner = new RequestDefinitionScanner(mvcConfig.getActionPackages());
+		container.bind(RequestDefinitionScanner.class.getName(), scanner);
+		
+		for (ViewResolver resolver : mvcConfig.getViewResolvers()) {
+			container.bind(resolver.getClass().getName()+":"+resolver.getViewName(), resolver);
+		}
+		container.bind(ViewConfig.class.getName(), new DefaultViewConfig(container));
+		
+		servletContext.setAttribute(CONTAINER, container);
 	}
 
 	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
 		ServletContext servletContext = servletContextEvent.getServletContext();
-	    servletContext.removeAttribute(IOCCONTAINER);
+	    servletContext.removeAttribute(CONTAINER);
 	    super.contextDestroyed(servletContextEvent);
 	}
 	
 	
 
-	public abstract void initContainer(DefaultContainer container);
+	public abstract MvcConfig createViewConfig();
 	
 
 }

@@ -54,37 +54,23 @@ public class TemplateReply extends Reply {
 	 * @see com.github.glue.mvc.Reply#populate(com.google.inject.Injector, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	void populate(IocContainer iocContainer, HttpServletRequest request,
+	void populate(Container container, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		
-		Set<ViewResolver> viewResolvers = Sets.newHashSet();
+		ViewConfig viewConfig = container.getInstance(ViewConfig.class);
 		
-		Set<String> viewResolverIds = iocContainer.getInstanceNames(ViewResolver.class);
-		for (String id : viewResolverIds) {
-			ViewResolver resolver = iocContainer.getInstance(ViewResolver.class, id);
-			if(resolver != null){
-				viewResolvers.add(resolver);
-			}
+		ViewResolver viewResolver = null;
+		
+		if(!Strings.isNullOrEmpty(typeName)){
+			viewResolver = viewConfig.getViewResolver(typeName);
+		}else{
+			viewResolver = viewConfig.getViewResolver();
 		}
 		
-		ViewResolver selectedResolver = null;
-		for (ViewResolver viewResolver : viewResolvers) {
-			if(Strings.isNullOrEmpty(typeName)){
-				selectedResolver = viewResolver;
-				break;
-			}
-			
-			if(Equivalences.equals().equivalent(typeName, viewResolver.getViewName())){
-				selectedResolver = viewResolver;
-				break;
-			}
+		if(viewResolver == null){
+			throw new RuntimeException("Can't find '"+ typeName +"' ViewResolver.");
 		}
-		
-		if(selectedResolver == null){
-			throw new RuntimeException("Can't find ViewResolver.");
-		}
-		
-		View view = selectedResolver.resolveView(templateName, request.getLocale());
+		View view = viewResolver.resolveView(templateName, request.getLocale());
 		view.render(attributes, request, response);
 		
 		if(!Strings.isNullOrEmpty(contentType)){
