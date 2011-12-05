@@ -187,6 +187,12 @@ public class RequestDefinition{
 	
 
 
+	public String getCharset() {
+		return charset;
+	}
+
+
+
 	private static class ServletStyleUriPatternMatcher implements UriPatternMatcher {
 	    @Override
 		public String toString() {

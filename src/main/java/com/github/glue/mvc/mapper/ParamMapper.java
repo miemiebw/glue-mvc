@@ -47,7 +47,7 @@ public class ParamMapper extends VarMapper {
 		
 		if(paramAnn != null){
 			if(typeConvertor != null){
-				Object value = typeConvertor.convert(requestHandler.getRequest().getParameterValues(paramAnn.value()));
+				Object value = typeConvertor.convert(requestHandler.getParameter(paramAnn.value()));
 				if(value != null){
 					if(typeConvertor instanceof ByteArrayConvertor){
 						log.debug("Request parameter: {}->{}(length)",paramAnn.value(),value == null ? null : ((byte[])value).length);

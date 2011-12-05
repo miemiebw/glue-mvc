@@ -84,7 +84,7 @@ public class FormMapper extends VarMapper {
 			Object value = null;
 			TypeConvertor convertor = TypeConvertorFactory.getConvertor(paramType, annotations);
 			if(convertor != null){
-				value = convertor.convert(requestHandler.getRequest().getParameterValues(name));
+				value = convertor.convert(requestHandler.getParameter(name));
 				if(convertor instanceof ByteArrayConvertor){
 					log.debug("Request parameter: {}->{}(length)",name,value == null ? null : ((byte[])value).length);
 				}else{
