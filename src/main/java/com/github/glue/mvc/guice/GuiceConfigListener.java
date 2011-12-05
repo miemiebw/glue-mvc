@@ -50,7 +50,6 @@ public abstract class GuiceConfigListener extends FileCleanerCleanup  {
 		ServletContext servletContext = servletContextEvent.getServletContext();
 		GuiceContainer guiceContainer = (GuiceContainer) servletContext.getAttribute(IOCCONTAINER);
 	    servletContext.removeAttribute(IOCCONTAINER);
-	    destroyInjector(guiceContainer.getInjector());
 	    
 	    super.contextDestroyed(servletContextEvent);
 	}
@@ -59,5 +58,4 @@ public abstract class GuiceConfigListener extends FileCleanerCleanup  {
 
 	protected abstract Injector createInjector();
 
-	protected abstract void destroyInjector(Injector injector);
 }
