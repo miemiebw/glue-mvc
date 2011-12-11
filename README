@@ -37,7 +37,7 @@ public class ExampleGuiceConfigListener extends GuiceConfigListener{
 			
 			@Override
 			public String[] getActionPackages() {
-				return new String[]{"com.github.glue.mvc.controllor"};
+				return new String[]{"com.github.glue.mvc.action"};
 			}
 		});
 	}
