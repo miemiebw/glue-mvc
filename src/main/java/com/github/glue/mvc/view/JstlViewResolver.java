@@ -10,7 +10,7 @@ import java.util.Locale;
  * @author eric
  *
  */
-public class JstlViewResolver extends ViewResolver {
+public class JstlViewResolver extends BaseUriViewResolver {
 	
 
 	/* (non-Javadoc)

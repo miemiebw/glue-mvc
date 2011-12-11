@@ -38,8 +38,6 @@ public class ThymeleafView implements View {
 	@Override
 	public void render(Map<String, ?> model, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
-		String url = resolver.getPrefix() + name + resolver.getSuffix();
-		log.debug("url: {}",url);
 		
 		WebContext webContext = new WebContext(request, request.getLocale());
 		webContext.setVariables(model);
