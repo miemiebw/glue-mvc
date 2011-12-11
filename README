@@ -1,70 +1,68 @@
-glue-guice是一个应用于GoogleGuice的胶水工具库。它包含mvc和persist(未实现)两部分。
 
 1.mvc用法
 
-public class ExampleContextListener extends GuiceLifecycleListener{
+public class ExampleGuiceConfigListener extends GuiceConfigListener{
 
+	/* (non-Javadoc)
+	 * @see com.github.glue.mvc.guice.GuiceConfigListener#createInjector()
+	 */
 	@Override
 	protected Injector createInjector() {
-		return Guice.createInjector(new MvcModule(){
-
+		return Guice.createInjector(new MvcModule() {
+			
 			@Override
 			public ViewResolver[] getViewResolvers() {
-				ViewResolver jstlResolver = new JstlViewResolver();
+				JstlViewResolver jstlResolver = new JstlViewResolver();
 				jstlResolver.setPrefix("/WEB-INF/views/");
 				jstlResolver.setSuffix(".jsp");
 				jstlResolver.setViewName("jstl");
 				
-				ViewResolver tylfResolver = new ThymeleafViewResolver();
-				tylfResolver.setPrefix("/WEB-INF/views/");
-				tylfResolver.setSuffix(".html");
+				
+				ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver();
+				templateResolver.setTemplateMode(TemplateMode.HTML5);
+				templateResolver.setPrefix("/WEB-INF/views/");
+				templateResolver.setSuffix(".html");
+				templateResolver.setCacheTTLMs(0L);
+				templateResolver.setCharacterEncoding("UTF-8");
+				
+				TemplateEngine templateEngine = new TemplateEngine();
+				templateEngine.setTemplateResolver(templateResolver);
+				
+				ThymeleafViewResolver tylfResolver = new ThymeleafViewResolver();
+				tylfResolver.setTemplateEngine(templateEngine);
 				tylfResolver.setViewName("tylf");
-				return new ViewResolver[]{jstlResolver,tylfResolver};
+				
+				return new ViewResolver[]{jstlResolver, tylfResolver};
 			}
-
+			
 			@Override
-			public String[] getControllerPackages() {
-				return new String[]{"com.github.glue.mvc.action"};
+			public String[] getActionPackages() {
+				return new String[]{"com.github.glue.mvc.controllor"};
 			}
-	    	
-	    });
+		});
 	}
 
-	@Override
-	protected void destroyInjector(Injector injector) {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
+public class BaseAction {
+	@Session("loginUser")
+	protected User user;
+}
+
+
 @Action
-public class ExampleAction {
+public class ExampleAction extends BaseAction{
 	
-	@Request(value = "/example!two", method = RequestMethod.GET)
-	public Reply example2(@Param("id")Integer id,
-			@Param("name")String name,
-			@Param("vip") Boolean vip,
-			@Param("time") Date time,
-			@Form ExampleBean bean,
-			@Param("list") List<String> list,
-			HttpServletRequest req,
-			HttpServletResponse resp,
-			HttpSession session,@Param("user.id")String userId){
-		System.out.println("example2");
-		System.out.println(String.format("%s,%s,%s,%s,%s,%s,%s", id,name,vip,time,bean,list,userId));
-		if(userId == null){
-			session.setAttribute("user.id", "003021");
-		}
+	@Get
+	@Path("/example!two")
+	public Object example2(@Param("id")Integer id, @Param("name")String name){
+		
+		System.out.println(exampleBean);
+		
 		return Reply.asTemplate("tylf").
 				with("message", "222222222222222222").
 				with("orders", getOrders()).
 				to("example");
-	}
-
-	@Request(value = "/example!one", method = RequestMethod.GET)
-	public Reply example(){
-		System.out.println("example");
-		return Reply.asJson().with(getOrders());
 	}
 	
 }
@@ -81,6 +79,6 @@ public class ExampleAction {
 	</filter-mapping>
 
 	<listener>
-		<listener-class>com.github.glue.mvc.ExampleContextListener</listener-class>
+		<listener-class>com.github.glue.mvc.ExampleGuiceConfigListener</listener-class>
 	</listener>
 </web-app>
