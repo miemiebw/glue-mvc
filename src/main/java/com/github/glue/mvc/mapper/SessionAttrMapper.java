@@ -33,7 +33,7 @@ public class SessionAttrMapper extends VarMapper {
 	public SessionAttrMapper(Class varType, Annotation[] annotations) {
 		super(varType, annotations);
 		for (Annotation ann : annotations) {
-			if(ann.annotationType().equals(Param.class)){
+			if(ann.annotationType().equals(Session.class)){
 				sessionAnn =  (Session) ann;
 			}
 		}

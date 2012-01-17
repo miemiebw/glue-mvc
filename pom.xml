@@ -70,7 +70,7 @@
 	<distributionManagement>
 		<snapshotRepository>
 			<id>sdhs-pdd</id>
-			<url>http://10.187.28.150:8226/nexus/content/repositories/snapshots/</url>
+			<url>http://10.187.18.111:8091/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
