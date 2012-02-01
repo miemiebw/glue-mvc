@@ -88,13 +88,11 @@ public class CustomOgnlExpressionEvaluator
                 CACHE.put(expression, new SoftReference<Object>(expressionTree));
             }
 
-            final Map<String,Object> contextVariables = 
-                new LinkedHashMap<String,Object>(
-                        ExpressionEvaluatorObjects.computeUtilityEvaluationObjects(arguments, templateResolution));
+            final Map<String,Object> contextVariables = arguments.computeBaseContextVariables(templateResolution);
             
             final Map<String,Object> additionalContextVariables =
                 computeAdditionalContextVariables(arguments, templateResolution);
-            if (additionalContextVariables != null) {
+            if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
                 contextVariables.putAll(additionalContextVariables);
             }
             
