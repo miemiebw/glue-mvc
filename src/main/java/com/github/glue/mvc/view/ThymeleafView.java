@@ -39,7 +39,7 @@ public class ThymeleafView implements View {
 	public void render(Map<String, ?> model, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		
-		WebContext webContext = new WebContext(request, request.getLocale());
+		WebContext webContext = new WebContext(request,request.getSession().getServletContext(), request.getLocale());
 		webContext.setVariables(model);
 		String result = templateEngine.process(name, webContext);
 		if (response.getContentType() == null) {

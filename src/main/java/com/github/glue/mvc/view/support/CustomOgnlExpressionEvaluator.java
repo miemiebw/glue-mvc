@@ -37,10 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
-import org.thymeleaf.expression.ExpressionEvaluatorObjects;
+import org.thymeleaf.cache.ICache;
+import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.standard.expression.IStandardExpressionEvaluator;
-import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.standard.expression.OgnlExpressionEvaluator;
 
 /**
  * 
@@ -52,46 +52,44 @@ import org.thymeleaf.templateresolver.TemplateResolution;
 public class CustomOgnlExpressionEvaluator 
         implements IStandardExpressionEvaluator {
     
-
-    public static final CustomOgnlExpressionEvaluator INSTANCE = new CustomOgnlExpressionEvaluator();
-
+	public static final CustomOgnlExpressionEvaluator INSTANCE = new CustomOgnlExpressionEvaluator();
+    private static final String OGNL_CACHE_PREFIX = "{ognl}";
     
-    private static final Logger logger = LoggerFactory.getLogger(CustomOgnlExpressionEvaluator.class);
-    
-    private static final int CACHE_MAX_SIZE = 100;
-    
-    private static final Map<String,SoftReference<Object>> CACHE =
-        Collections.synchronizedMap(new CacheMap(CACHE_MAX_SIZE));
-    
-
-    
-    
+    private static final Logger logger = LoggerFactory.getLogger(OgnlExpressionEvaluator.class);
 
 
-    
-    public final Object evaluate(final Arguments arguments, 
-            final TemplateResolution templateResolution, final String expression, final Object root) {
-       
+    public final Object evaluate(final Arguments arguments, final String expression, final Object root) {
+        
         try {
 
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] OGNL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression);
             }
+
             
             Object expressionTree = null;
-            SoftReference<Object> expressionTreeRef = CACHE.get(expression);
-            if (expressionTreeRef != null) {
-                expressionTree = expressionTreeRef.get();
+            ICache<String, Object> cache = null;
+            
+            final ICacheManager cacheManager = arguments.getConfiguration().getCacheManager();
+            if (cacheManager != null) {
+                cache = cacheManager.getExpressionCache();
+                if (cache != null) {
+                    expressionTree = cache.get(OGNL_CACHE_PREFIX + expression);
+                }
             }
+            
             if (expressionTree == null) {
                 expressionTree = ognl.Ognl.parseExpression(expression);
-                CACHE.put(expression, new SoftReference<Object>(expressionTree));
+                if (cache != null && null != expressionTree) {
+                    cache.put(OGNL_CACHE_PREFIX + expression, expressionTree);
+                }
             }
-
-            final Map<String,Object> contextVariables = arguments.computeBaseContextVariables(templateResolution);
+            
+            
+            final Map<String,Object> contextVariables = arguments.getBaseContextVariables();
             
             final Map<String,Object> additionalContextVariables =
-                computeAdditionalContextVariables(arguments, templateResolution);
+                computeAdditionalContextVariables(arguments);
             if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
                 contextVariables.putAll(additionalContextVariables);
             }
@@ -99,21 +97,19 @@ public class CustomOgnlExpressionEvaluator
             return ognl.Ognl.getValue(expressionTree, contextVariables, root);
             
         } catch (final OgnlException e) {
+        	
         	logger.warn(e.getMessage());
-            //throw new ExpressionEvaluationException("Exception evaluating OGNL expression", e);
+        	
+//        	throw new TemplateProcessingException(
+//                    "Exception evaluating OGNL expression: \"" + expression + "\"", e);
         }
         return "";
+        
     }
 
-
-
     
-    /*
-     * Meant to be overwritten
-     */
-    @SuppressWarnings("unused")
     protected Map<String,Object> computeAdditionalContextVariables(
-            final Arguments arguments, final TemplateResolution templateResolution) {
+            @SuppressWarnings("unused") final Arguments arguments) {
         return variables;
     }
     
