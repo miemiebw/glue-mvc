@@ -24,12 +24,8 @@
  */
 package com.github.glue.mvc.view.support;
 
-import java.lang.ref.SoftReference;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import ognl.OgnlException;
 
@@ -125,28 +121,6 @@ public class CustomOgnlExpressionEvaluator
     }
 
     
-    
-    
-    
-    final static class CacheMap extends LinkedHashMap<String,SoftReference<Object>> {
-        
-        private static final long serialVersionUID = 4921099038104722137L;
-        
-        private final int maxSize;
-
-        public CacheMap(final int maxSize) {
-            super(16, 0.75f, true);
-            this.maxSize = maxSize;
-        }
-
-        @Override
-        protected boolean removeEldestEntry(final Entry<String, SoftReference<Object>> eldest) {
-            return size() > this.maxSize;
-        }
-        
-        
-    }
-
 
     @Override
     public String toString() {
