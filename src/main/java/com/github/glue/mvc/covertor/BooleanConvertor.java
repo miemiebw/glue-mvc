@@ -14,6 +14,9 @@ public class BooleanConvertor extends TypeConvertor<String[]> {
 	 */
 	@Override
 	public Object convert(String[] parameters) {
+		if(parameters == null){
+			return false;
+		}
 		return Boolean.valueOf(parameters[0]);
 	}
 
